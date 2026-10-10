@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive To-Do App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f4068, #162447);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #0f172a;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            width: 350px;
+            border: 1px solid #334155;
+        }
+        h2 { text-align: center; color: #38bdf8; margin-bottom: 20px; }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #475569;
+            background: #1e293b;
+            color: white;
+            border-radius: 8px;
+            outline: none;
+        }
+        input:focus { border-color: #38bdf8; }
+        button {
+            padding: 10px 15px;
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover { background: #0ea5e9; }
+        ul { list-style: none; padding: 0; }
+        li {
+            background: #1e293b;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #334155;
+        }
+        li.completed span {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+        .actions { display: flex; gap: 5px; }
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-btn:hover { background: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📝 My Tasks</h2>
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="Naya task likhein...">
+            <button onclick="addTask()">Add</button>
+        </div>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const taskInput = document.getElementById('taskInput');
+        const taskList = document.getElementById('taskList');
+
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        renderTasks();
+
+        function addTask() {
+            const text = taskInput.value.trim();
+            if (text === '') return;
+            tasks.push({ text: text, completed: false });
+            taskInput.value = '';
+            saveAndRender();
+        }
+
+        function toggleTask(index) {
+            tasks[index].completed = !tasks[index].completed;
+            saveAndRender();
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            saveAndRender();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function renderTasks() {
+            taskList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                if (task.completed) li.classList.add('completed');
+                
+                li.innerHTML = `
+                    <span onclick="toggleTask(${index})" style="cursor:pointer; flex:1;">${task.text}</span>
+                    <div class="actions">
+                        <button class="delete-btn" onclick="deleteTask(${index})">X</button>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
